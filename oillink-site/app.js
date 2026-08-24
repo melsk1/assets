@@ -1,28 +1,6 @@
 const icons=["▥","⌂","⚙","⌘","⇄","◎","◉","♙","◎"];
-function renderLists(code){
- const d=LISTS[code]||LISTS.en;
- document.getElementById("capGrid").innerHTML=d.caps.map((x,i)=>`<div class="cap"><i>${icons[i]}</i>${x}</div>`).join("");
- document.getElementById("bringList").innerHTML=d.bring.map(x=>`<li>${x}</li>`).join("");
- document.getElementById("provideList").innerHTML=d.provide.map(x=>`<li>${x}</li>`).join("");
- document.getElementById("steps").innerHTML=d.steps.map(x=>`<div class="step"><b>${x[0]}</b><strong>${x[1]}</strong><small>${x[2]}</small></div>`).join("");
- document.getElementById("industryGrid").innerHTML=d.industries.map(x=>`<div class="industry">${x}</div>`).join("");
- document.getElementById("uaeList").innerHTML=d.uae.map(x=>`<li>${x}</li>`).join("");
-}
-function lang(code){
- const d=T[code]||T.en;
- document.documentElement.lang=code;
- document.documentElement.dir=code==="ar"?"rtl":"ltr";
- document.querySelectorAll("[data-i18n]").forEach(el=>{const v=d[el.dataset.i18n];if(v!==undefined)el.innerHTML=v;});
- document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=d[el.dataset.ph]||T.en[el.dataset.ph]||"");
- renderLists(code);
- document.querySelectorAll(".footer-langs button").forEach(b=>b.classList.toggle("active",b.dataset.lang===code));
- localStorage.setItem("oillink-lang",code);
- document.querySelector("#language").value=code;
-}
+function renderLists(code){const d=LISTS[code]||LISTS.en;document.getElementById("capGrid").innerHTML=d.caps.map((x,i)=>`<div class="cap"><i>${icons[i]}</i>${x}</div>`).join("");document.getElementById("bringList").innerHTML=d.bring.map(x=>`<li>${x}</li>`).join("");document.getElementById("provideList").innerHTML=d.provide.map(x=>`<li>${x}</li>`).join("");document.getElementById("steps").innerHTML=d.steps.map(x=>`<div class="step"><b>${x[0]}</b><strong>${x[1]}</strong><small>${x[2]}</small></div>`).join("");document.getElementById("industryGrid").innerHTML=d.industries.map(x=>`<div class="industry">${x}</div>`).join("");document.getElementById("uaeList").innerHTML=d.uae.map(x=>`<li>${x}</li>`).join("");}
+function lang(code){if(!["en","ar","zh"].includes(code))code="en";const d=T[code]||T.en;document.documentElement.lang=code;document.documentElement.dir=code==="ar"?"rtl":"ltr";document.querySelectorAll("[data-i18n]").forEach(el=>{const v=d[el.dataset.i18n];if(v!==undefined)el.innerHTML=v;});document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=d[el.dataset.ph]||T.en[el.dataset.ph]||"");renderLists(code);document.querySelectorAll(".footer-langs button").forEach(b=>b.classList.toggle("active",b.dataset.lang===code));localStorage.setItem("oillink-lang",code);document.querySelector("#language").value=code;}
 function showFormMessage(){alert((T[document.documentElement.lang]||T.en).formMsg);}
-const sel=document.querySelector("#language");
-const initial=localStorage.getItem("oillink-lang")||"en";
-sel.value=initial;lang(initial);
-sel.addEventListener("change",e=>lang(e.target.value));
-document.querySelector("#menu").addEventListener("click",()=>document.querySelector(".desktop-nav").classList.toggle("open"));
-document.querySelectorAll(".footer-langs button").forEach(btn=>btn.addEventListener("click",()=>{lang(btn.dataset.lang);window.scrollTo({top:0,behavior:"smooth"});}));
+const sel=document.querySelector("#language");const saved=localStorage.getItem("oillink-lang");const initial=["en","ar","zh"].includes(saved)?saved:"en";sel.value=initial;lang(initial);sel.addEventListener("change",e=>lang(e.target.value));document.querySelector("#menu").addEventListener("click",()=>document.querySelector(".desktop-nav").classList.toggle("open"));document.querySelectorAll(".footer-langs button").forEach(btn=>btn.addEventListener("click",()=>{lang(btn.dataset.lang);window.scrollTo({top:0,behavior:"smooth"});}));
+(function(){const navLinks=[...document.querySelectorAll('.desktop-nav a[href^="#"]')];const sections=navLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);if(!navLinks.length||!sections.length)return;function setActive(id){navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));}function updateActive(){const navH=document.querySelector('.nav')?.offsetHeight||76;const probe=window.scrollY+navH+Math.min(window.innerHeight*.30,220);let current=sections[0];for(const s of sections){if(s.offsetTop<=probe)current=s;}if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-8)current=sections[sections.length-1];setActive(current.id);}window.addEventListener('scroll',updateActive,{passive:true});window.addEventListener('resize',updateActive);navLinks.forEach(a=>a.addEventListener('click',()=>setActive(a.getAttribute('href').slice(1))));updateActive();})();
